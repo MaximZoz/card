@@ -1,22 +1,24 @@
 import { Kind, type GraphQLResolveInfo, type SelectionNode } from 'graphql';
 
-/** Вложенные списки, которые имеют смысл читать отдельной связью. */
+// Вложенные списки профиля. Этот массив — единственное место, где они перечислены:
+// из него выводятся и тип флагов, и их разбор в relationInclude.
 export const NESTED_FIELDS = ['links', 'skills', 'experience', 'projects'] as const;
 
 export type NestedField = (typeof NESTED_FIELDS)[number];
 
 export type RelationInclude = Record<NestedField, boolean>;
 
+// Какие связи запрошены клиентом. Флаг true только у полей, названных в запросе.
 export function relationInclude(fields: readonly string[]): RelationInclude {
   const requested = new Set(fields);
-  return {
-    links: requested.has('links'),
-    skills: requested.has('skills'),
-    experience: requested.has('experience'),
-    projects: requested.has('projects'),
-  };
+  const include = {} as RelationInclude;
+  for (const field of NESTED_FIELDS) {
+    include[field] = requested.has(field);
+  }
+  return include;
 }
 
+// Имена полей верхнего уровня внутри profile { ... }, с разворотом inline-фрагментов.
 export function selectedFieldNames(info: Pick<GraphQLResolveInfo, 'fieldNodes'>): string[] {
   const names: string[] = [];
   for (const node of info.fieldNodes) {

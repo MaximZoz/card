@@ -3,6 +3,7 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { RelationInclude } from './selection';
 
+// Все связи сортируются по sortOrder, чтобы порядок в ответе совпадал с порядком в card.ts.
 const order = { orderBy: { sortOrder: 'asc' as const } };
 
 export type ProfileRow = {
@@ -28,6 +29,8 @@ type FullRow = Prisma.ProfileGetPayload<{
 export class ProfileRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  // Читает профиль и только те связи, флаг которых true.
+  // relationLoadStrategy 'join' собирает запрошенные списки одним SQL вместо запроса на связь.
   async load(id: string, include: RelationInclude): Promise<ProfileRow | null> {
     const row = (await this.prisma.profile.findUnique({
       relationLoadStrategy: 'join',
@@ -44,22 +47,20 @@ export class ProfileRepository {
       return null;
     }
 
-    // Связь читается только если include для неё включён тем же флагом.
+    // Незапрошенная связь приходит из Prisma как undefined, наружу отдаём пустой список.
     return {
       name: row.name,
       description: row.description,
-      links: include.links ? row.links.map((item) => ({ title: item.title, url: item.url })) : [],
-      skills: include.skills ? row.skills.map((item) => ({ name: item.name })) : [],
-      experience: include.experience
-        ? row.experience.map((item) => ({
-            company: item.company,
-            position: item.position,
-            startedOn: item.startedOn,
-            finishedOn: item.finishedOn,
-            achievements: item.achievements,
-          }))
-        : [],
-      projects: include.projects ? row.projects.map((item) => ({ name: item.name, url: item.url })) : [],
+      links: (row.links ?? []).map((item) => ({ title: item.title, url: item.url })),
+      skills: (row.skills ?? []).map((item) => ({ name: item.name })),
+      experience: (row.experience ?? []).map((item) => ({
+        company: item.company,
+        position: item.position,
+        startedOn: item.startedOn,
+        finishedOn: item.finishedOn,
+        achievements: item.achievements,
+      })),
+      projects: (row.projects ?? []).map((item) => ({ name: item.name, url: item.url })),
     };
   }
 }

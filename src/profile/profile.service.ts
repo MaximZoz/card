@@ -5,6 +5,7 @@ import { ProfileModel } from './profile.model';
 import { ProfileRepository } from './profile.repository';
 import { RelationInclude } from './selection';
 
+// Два месяца в читаемый период. Пустой finishedOn подменяется подписью из конфигурации.
 export function formatPeriod(startedOn: string, finishedOn: string | null, labels: PeriodLabels): string {
   return `${startedOn}${labels.separator}${finishedOn ?? labels.present}`;
 }
@@ -16,6 +17,8 @@ export class ProfileService {
     private readonly config: AppConfig,
   ) {}
 
+  // Берёт строку из репозитория и готовит вид для GraphQL.
+  // Единственное преобразование здесь — склейка периода из двух месяцев.
   async get(include: RelationInclude): Promise<ProfileModel> {
     const row = await this.repository.load(card.id, include);
     if (!row) {

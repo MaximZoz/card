@@ -58,6 +58,63 @@ query {
 | Схема GraphQL | `src/profile/profile.model.ts`, `profile.resolver.ts` |
 | Порт, путь GraphQL, подпись периода, SQL-лог | `src/config/configuration.ts` |
 
+## Как устроено
+
+Запрос проходит через три слоя, и каждый отвечает за одно. Клиент отправляет GraphQL, резолвер смотрит, какие связи запрошены, репозиторий читает из базы только их, сервис собирает ответ.
+
+```mermaid
+flowchart LR
+  client["Apollo Sandbox / клиент"] -->|GraphQL| resolver["ProfileResolver"]
+  resolver -->|флаги связей| service["ProfileService"]
+  service --> repo["ProfileRepository"]
+  repo -->|Prisma, один JOIN| db[("PostgreSQL")]
+  seed["SeedService (старт)"] -->|наполнение| db
+  card["src/card/card.ts<br/>источник данных"] --> seed
+  card -. при старте .-> validate["validateCard"]
+```
+
+Данные живут в одном объекте `card.ts`. При старте `SeedService` проверяет его и переписывает в базу. Таблицы связаны с профилем один-ко-многим и читаются в порядке `sortOrder`.
+
+```mermaid
+erDiagram
+  Profile ||--o{ Link : links
+  Profile ||--o{ Skill : skills
+  Profile ||--o{ Experience : experience
+  Profile ||--o{ Project : projects
+
+  Profile {
+    string id PK
+    string name
+    string description
+  }
+  Link {
+    string id PK
+    string title
+    string url
+    int sortOrder
+  }
+  Skill {
+    string id PK
+    string name
+    int sortOrder
+  }
+  Experience {
+    string id PK
+    string company
+    string position
+    string startedOn
+    string finishedOn
+    string[] achievements
+    int sortOrder
+  }
+  Project {
+    string id PK
+    string name
+    string url
+    int sortOrder
+  }
+```
+
 ## Архитектурные решения
 
 **GraphQL по code-first.** Схема генерируется из классов TypeScript (`profile.model.ts`), отдельного SDL-файла нет. Источник один, поэтому схема и код не расходятся, а хранить в git копию, которая устареет, незачем.

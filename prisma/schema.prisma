@@ -1,0 +1,66 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["relationJoins"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Одна визитка. Идентификатор берётся из src/card/card.ts.
+model Profile {
+  id          String       @id
+  name        String
+  description String
+  links       Link[]
+  skills      Skill[]
+  experience  Experience[]
+  projects    Project[]
+}
+
+model Link {
+  id        String  @id @default(cuid())
+  profileId String
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  title     String
+  url       String
+  sortOrder Int
+
+  @@index([profileId, sortOrder])
+}
+
+model Skill {
+  id        String  @id @default(cuid())
+  profileId String
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  name      String
+  sortOrder Int
+
+  @@index([profileId, sortOrder])
+}
+
+model Experience {
+  id           String   @id @default(cuid())
+  profileId    String
+  profile      Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  company      String
+  position     String
+  startedOn    String
+  finishedOn   String?
+  achievements String[]
+  sortOrder    Int
+
+  @@index([profileId, sortOrder])
+}
+
+model Project {
+  id        String  @id @default(cuid())
+  profileId String
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  name      String
+  url       String
+  sortOrder Int
+
+  @@index([profileId, sortOrder])
+}

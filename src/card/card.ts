@@ -23,7 +23,7 @@ export const card: Card = {
   id: 'maxim-zozulya',
   name: 'Максим Зозуля',
   description:
-    'Шесть лет пишу TypeScript и C# в компании «Системные Технологии», Калининград. Делаю интерфейсы на Angular и Vue и API на .NET: экраны, фоновые задания, миграции MS SQL и PostgreSQL. Задачу довожу до кода, тестов и pull request. LLM использую для разбора кода, черновиков тестов и проверки перед ревью.',
+    'Шесть лет пишу TypeScript и C# в компании «Системные Технологии», Калининград. Делаю интерфейсы на Angular и Vue и API на .NET: экраны, фоновые задания, миграции MS SQL и PostgreSQL. Быстро вникаю в новые технологии и спокойно берусь за незнакомый стек: разбираюсь в чужом коде и довожу задачу до кода, тестов и pull request. LLM использую для разбора кода, черновиков тестов и проверки перед ревью.',
   links: [
     { title: 'GitHub', url: 'https://github.com/MaximZoz' },
     { title: 'games', url: 'https://github.com/MaximZoz/games' },

@@ -8,7 +8,9 @@ Backend-визитка: PostgreSQL, Prisma, NestJS, GraphQL (Apollo Sandbox), Do
 docker compose up --build
 ```
 
-Sandbox: <http://localhost:3000/graphql>
+Публичный Sandbox: <https://maxim-zozulya-card.fly.dev/graphql>
+
+Локально после `docker compose up --build`: <http://localhost:3000/graphql>
 
 ```graphql
 query {

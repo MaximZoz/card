@@ -2,6 +2,8 @@ import { Card } from './card';
 
 const MONTH = /^\d{4}-(0[1-9]|1[0-2])$/;
 
+// Проверяет карточку перед записью в базу и возвращает список понятных ошибок.
+// Пустой список значит, что данные корректны.
 export function validateCard(value: Card): string[] {
   const errors: string[] = [];
 

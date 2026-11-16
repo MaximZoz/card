@@ -13,6 +13,8 @@ export class SeedService implements OnApplicationBootstrap {
     private readonly config: AppConfig,
   ) {}
 
+  // При старте приложения карточка проверяется и целиком переписывается в базу.
+  // Одна транзакция: либо профиль и все списки обновились, либо база осталась прежней.
   async onApplicationBootstrap(): Promise<void> {
     if (!this.config.seedOnStart) {
       this.logger.log('Сид выключен');
@@ -25,6 +27,7 @@ export class SeedService implements OnApplicationBootstrap {
     }
 
     await this.prisma.$transaction(async (tx) => {
+      // Профиль обновляется на месте, списки заменяются целиком — повторный запуск не плодит дубли.
       await tx.profile.upsert({
         where: { id: card.id },
         create: { id: card.id, name: card.name, description: card.description },

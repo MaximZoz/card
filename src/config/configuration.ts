@@ -5,7 +5,7 @@ export type PeriodLabels = {
   present: string;
 };
 
-/** Текст периода. Меняется здесь, в базу не пишется. */
+// Подписи периода работы. Это оформление, а не данные, поэтому живут в конфигурации, а не в базе.
 export const periodText: PeriodLabels = {
   separator: ' — ',
   present: 'по настоящее время',
@@ -19,6 +19,7 @@ export type AppSettings = {
   period: PeriodLabels;
 };
 
+// Разбор окружения в настройки. Вынесен из класса отдельной функцией, чтобы его покрывали тесты.
 export function readConfig(env: NodeJS.ProcessEnv, period: PeriodLabels = periodText): AppSettings {
   return {
     port: readPort(env.PORT),

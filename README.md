@@ -15,15 +15,22 @@ query {
   profile {
     name
     description
+    links {
+      title
+      url
+    }
     skills {
       name
     }
     experience {
       company
       position
+      period
+      achievements
     }
     projects {
       name
+      url
     }
   }
 }

@@ -5,6 +5,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { AppConfig } from './config/configuration';
 import { ConfigModule } from './config/config.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { profileDocument } from './profile/profile.document';
 import { ProfileModule } from './profile/profile.module';
 import { SeedService } from './seed/seed.service';
 
@@ -23,7 +24,12 @@ import { SeedService } from './seed/seed.service';
         introspection: true,
         playground: false,
         csrfPrevention: false,
-        plugins: [ApolloServerPluginLandingPageLocalDefault({ embed: true })],
+        plugins: [
+          ApolloServerPluginLandingPageLocalDefault({
+            embed: true,
+            document: profileDocument,
+          }),
+        ],
       }),
     }),
     PrismaModule,
